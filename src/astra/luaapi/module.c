@@ -101,8 +101,15 @@ int method_new(lua_State *L)
         lua_pushnil(L);
     }
 
-    /* create table representing module instance */
+    /* initialize module data */
     module_data_t *const mod = (module_data_t *)asc_calloc(1, manifest->size);
+    mod->manifest = manifest;
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_MAINTHREAD);
+    mod->lua = lua_tothread(L, -1);
+    lua_pop(L, 1);
+
+    /* NOTE: module instances appear as tables in Lua */
     lua_newtable(L);
 
     /* set up metatable */
@@ -136,9 +143,6 @@ int method_new(lua_State *L)
     }
 
     /* run module-specific initialization */
-    mod->manifest = manifest;
-    mod->lua = L;
-
     if (manifest->reg->init != NULL)
     {
         const int stack = lua_gettop(L);
