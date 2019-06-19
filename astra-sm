@@ -1,0 +1,31 @@
+#!/bin/sh
+
+test -f /etc/astra/astra-sm.lua || exit 0
+test -f /etc/astra/astra-sm.conf || exit 0
+
+case "$1" in
+  start)
+    echo "Starting astra-sm with astra-sm.lua as config file"
+    ulimit -n 65536
+    /usr/bin/astra --pid /var/run/astra.pid /etc/astra/astra-sm.lua &
+    ;;
+  start-normal)
+    echo "Starting astra-sm with astra-sm.conf as config file"
+    ulimit -n 65536
+    /usr/bin/astra --pid /var/run/astra.pid /etc/astra/astra-sm.conf &
+    ;;
+  stop)
+    echo "Stopping astra-sm"
+    kill `cat /var/run/astra.pid`
+    ;;
+  restart|reload|force-reload)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|reload|force-reload|start-normal}"
+    exit 1
+esac
+
+exit 0
