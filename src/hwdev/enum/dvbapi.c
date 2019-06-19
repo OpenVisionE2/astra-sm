@@ -25,6 +25,8 @@
 #include <net/if.h>
 #include <dirent.h>
 
+#undef HAVE_LINUX_DVB_NET_H
+
 #include <linux/dvb/frontend.h>
 #ifdef HAVE_LINUX_DVB_NET_H
 #   include <linux/dvb/net.h>
